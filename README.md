@@ -1,7 +1,7 @@
 # OmniView - Free Online Video Search and Streaming Platform
 
 <div align="center">
-  <img src="image/logo.png" alt="OmniView Logo">
+  <img src="image/logo.png" alt="OmniView Logo" width="128">
 
   [![GitHub stars](https://img.shields.io/github/stars/CrueChan/OmniView?style=social)](https://github.com/CrueChan/OmniView/stargazers)
   [![GitHub forks](https://img.shields.io/github/forks/CrueChan/OmniView?style=social)](https://github.com/CrueChan/OmniView/network)
