@@ -1,0 +1,83 @@
+services:
+  omniview:
+    # Using a local build (development environment)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Or use a published image (production environment)
+    # image: CrueChan/omniview:latest
+    
+    container_name: omniview
+    
+    ports:
+      - "8899:8080"  # Host port:container port
+    
+    environment:
+      # Basic Configuration
+      - PORT=8080
+      - NODE_ENV=production
+      - PASSWORD=${PASSWORD:-}
+      - ADMINPASSWORD=${ADMINPASSWORD:-}
+      - DEBUG=${DEBUG:-false}
+      
+      # CORS Configuration
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+      
+      # Request Configuration
+      - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-5000}
+      - MAX_RETRIES=${MAX_RETRIES:-2}
+      - USER_AGENT=${USER_AGENT:-Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36}
+      
+      # Cache Configuration
+      - CACHE_MAX_AGE=${CACHE_MAX_AGE:-1d}
+      
+      # Security Configuration
+      - BLOCKED_HOSTS=${BLOCKED_HOSTS:-localhost,127.0.0.1,0.0.0.0,::1}
+      - BLOCKED_IP_PREFIXES=${BLOCKED_IP_PREFIXES:-192.168.,10.,172.}
+      - FILTERED_HEADERS=${FILTERED_HEADERS:-content-security-policy,cookie,set-cookie,x-frame-options,access-control-allow-origin}
+    
+    # Data persistence (uncomment to enable)
+    # volumes:
+    #   - ./data:/app/data
+    #   - ./logs:/app/logs
+    
+    # Restart strategy
+    restart: unless-stopped
+    
+    # Health Check (Docker Compose Level)
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits (optional, to prevent excessive resource usage)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    
+    # Network Configuration
+    networks:
+      - omniview_network
+
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/node_modules/.cache
+
+# Network Definition
+networks:
+  omniview_network:
+    driver: bridge
+
+# Data volume definition (if persistent data is required)
+# volumes:
+#   omniview_data:
+#     driver: local

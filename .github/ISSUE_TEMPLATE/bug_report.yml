@@ -1,0 +1,60 @@
+name: BUG Report
+description: "Create a report to help us improve"
+title: "[BUG]"
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: self_check
+    attributes:
+      label: Self-check
+      description: Self-Check before submitting the Issue
+      options:
+        - label: I have already cleard my browser cache
+          required: false
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      description: Please confirm
+      options:
+        - label: I have searched the Issue and found no related issues
+          required: true
+        - label: I am using the latest source from this repository
+          required: true
+        - label: I provided information which does not include sensitive information
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: BUG Description
+      description: Describe your BUG here
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What you expect to happen
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction Steps
+      description: How to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: debug
+    attributes:
+      label: Console Log
+      description: F12 -> Console
+    validations:
+      required: false
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Information
+      description: Any other information you think might be helpful to solve this BUG
+    validations:
+      required: false

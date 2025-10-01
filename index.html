@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniView - Free Online Video Search and Viewing Platform</title>
+    <meta name="description" content="OmniView is a free online video search platform, ad-free and secure, providing content search and viewing services from multiple video sources, no registration required.">
+    <meta name="keywords" content="online video, free video, video search, movies, TV series, OmniView">
+    <meta name="author" content="OmniView Team">
+
+    <!-- Favicon -->
+    <link rel="icon" href="image/logo.png">
+    <link rel="apple-touch-icon" href="image/logo-black.png">
+    <link rel="manifest" href="manifest.json">
+    
+    <script src="libs/tailwindcss.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="page-bg text-white">
+    <!-- Move history button to top left，and reduce size -->
+    <div class="fixed top-4 left-4 z-10">
+        <button onclick="toggleHistory(event)" class="bg-[#222] hover:bg-[#333] border border-[#333] hover:border-white rounded-lg px-3 py-1.5 transition-colors" aria-label="Watch History">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Keep settings button in top right，and reduce size -->
+    <div class="fixed top-4 right-4 z-10">
+        <button onclick="toggleSettings(event)" class="bg-[#222] hover:bg-[#333] border border-[#333] hover:border-white rounded-lg px-3 py-1.5 transition-colors" aria-label="Open Settings">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+        </button>
+    </div>
+    
+    <!-- History Panel - Center title -->
+    <div id="historyPanel" class="history-panel fixed left-0 top-0 h-full bg-[#111] border-r border-[#333] p-6 z-40 transform -translate-x-full transition-transform duration-300" aria-label="Watch History" aria-hidden="true">
+        <div class="flex justify-between items-center mb-6">
+                <button onclick="toggleHistory()" class="close-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            <h3 class="text-xl font-bold gradient-text mx-auto">Watch History</h3>
+            <div class="w-4"></div> <!-- Add a placeholder element to ensure title is centered -->
+        </div>
+        <div id="historyList" class="pb-4">
+            <!-- History will be dynamically displayed here -->
+            <div class="text-center text-gray-500 py-8">No viewing history</div>
+        </div>
+        <div class="mt-4 text-center sticky bottom-0 pb-2 pt-2 bg-[#111]">
+            <button onclick="clearViewingHistory()" class="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg">
+                Clear History
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel fixed right-0 top-0 h-full w-80 bg-[#111] border-l border-[#333] p-6 z-40 overflow-y-auto" aria-label="Settings Panel" aria-hidden="true">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold gradient-text">Settings</h3>
+            <button onclick="toggleSettings()" class="close-btn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="space-y-5">
+            <!-- Data Source Settings Area -->
+            <div class="p-3 bg-[#151515] rounded-lg shadow-inner">
+                <label class="block text-sm font-medium text-gray-400 mb-3 border-b border-[#333] pb-1">Data Source Settings</label>
+                
+                <!-- Batch operation buttons -->
+                <div class="flex space-x-2 mb-3">
+                    <button onclick="selectAllAPIs(true)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">Select All</button>
+                    <button onclick="selectAllAPIs(false)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">Deselect All</button>
+                    <button onclick="selectAllAPIs(true, true)" class="px-2 py-1 bg-[#333] hover:bg-[#444] text-white text-xs rounded">Select All Normal Sources</button>
+                </div>
+                
+                <!-- API Selection Area - Use scroll area -->
+                <div class="max-h-40 overflow-y-auto bg-[#191919] p-2 rounded-lg mb-3">
+                    <div id="apiCheckboxes">
+                        <!-- API checkboxes will be dynamically inserted here -->
+                    </div>
+                </div>
+                
+                <!-- API Information Display -->
+                <div class="text-xs text-gray-500 flex justify-between items-center">
+                    <span>Selected APIs: <span id="selectedApiCount" class="text-white">0</span></span>
+                    <span id="siteStatus" class="ml-2"></span>
+                </div>
+            </div>
+
+            <!-- Custom API Management Area -->
+            <div class="p-3 bg-[#151515] rounded-lg shadow-inner">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="block text-sm font-medium text-gray-400 border-b border-[#333] w-full pb-1">Custom API</label>
+                    <button onclick="showAddCustomApiForm()" class="bg-[#333] hover:bg-[#444] text-white w-6 h-6 rounded-full text-center leading-none text-lg ml-1">+</button>
+                </div>
+                <div id="customApisList" class="max-h-32 overflow-y-auto mb-2">
+                    <!-- Custom APIs will be displayed here -->
+                </div>
+                
+                <!-- Add Custom API Form (Hidden by default) -->
+                <div id="addCustomApiForm" class="hidden mt-2 p-2 bg-[#191919] rounded-lg">
+                    <input type="text" id="customApiName" placeholder="API Name" class="w-full bg-[#222] border border-[#333] text-white px-2 py-1 rounded mb-2" autocomplete="off">
+                    <input type="text" id="customApiUrl" placeholder="https://abc.com" class="w-full bg-[#222] border border-[#333] text-white px-2 py-1 rounded mb-2" autocomplete="off">
+                    <!-- Add New detail Address input field -->
+                    <input type="text" id="customApiDetail" placeholder="Detail address (optional)" class="w-full bg-[#222] border border-[#333] text-white px-2 py-1 rounded mb-2" autocomplete="off">
+                    <!-- Add adult content toggle -->
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" id="customApiIsAdult" class="form-checkbox h-4 w-4 text-pink-500 bg-[#222] border border-[#333]">
+                        <label for="customApiIsAdult" class="ml-2 text-xs text-pink-400">Adult content source</label>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="addCustomApi()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">Add</button>
+                        <button onclick="cancelAddCustomApi()" class="bg-[#444] hover:bg-[#555] text-white px-3 py-1 rounded text-xs">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Filter Settings Area -->
+            <div class="p-3 bg-[#151515] rounded-lg shadow-inner">
+                <label class="block text-sm font-medium text-gray-400 mb-3 border-b border-[#333] pb-1">Feature Toggles</label>
+                
+                <!-- Adult Content Filter Toggle -->
+                <div class="flex flex-col mb-3 pb-3 border-b border-[#222] relative">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="text-sm font-medium text-gray-400">Adult Content Filter</label>
+                            <p class="text-xs text-gray-500 mt-1 filter-description">Filter adult content such as "ethical films"</p>
+                        </div>
+                        <div class="relative inline-block w-12 align-middle select-none">
+                            <input type="checkbox" id="yellowFilterToggle" class="opacity-0 absolute w-full h-full cursor-pointer z-10">
+                            <div class="toggle-bg bg-[#333] w-12 h-6 rounded-full transition-colors duration-300 ease-in-out"></div>
+                            <div class="toggle-dot absolute w-5 h-5 bg-white rounded-full top-0.5 left-0.5 transition-transform duration-300 ease-in-out"></div>
+                        </div>
+                    </div>
+                    <!-- Warning message will be dynamically inserted here -->
+                </div>
+                
+                <!-- Ad Filter Toggle -->
+                <div class="flex items-center justify-between mb-3 pb-3 border-b border-[#222]">
+                    <div>
+                        <label class="text-sm font-medium text-gray-400">Fragmented Ad Filter</label>
+                        <p class="text-xs text-gray-500 mt-1">Disable to reduce lag in older browsers</p>
+                    </div>
+                    <div class="relative inline-block w-12 align-middle select-none">
+                        <input type="checkbox" id="adFilterToggle" class="opacity-0 absolute w-full h-full cursor-pointer z-10">
+                        <div class="toggle-bg bg-[#333] w-12 h-6 rounded-full transition-colors duration-300 ease-in-out"></div>
+                        <div class="toggle-dot absolute w-5 h-5 bg-white rounded-full top-0.5 left-0.5 transition-transform duration-300 ease-in-out"></div>
+                    </div>
+                </div>
+                
+                <!-- Douban Popular Toggle -->
+                <div class="flex items-center justify-between">
+                    <div>
+                        <label class="text-sm font-medium text-gray-400">Douban Popular Recommendations</label>
+                        <p class="text-xs text-gray-500 mt-1">Display Douban popular movies and TV shows on homepage</p>
+                    </div>
+                    <div class="relative inline-block w-12 align-middle select-none">
+                        <input type="checkbox" id="doubanToggle" class="opacity-0 absolute w-full h-full cursor-pointer z-10">
+                        <div class="toggle-bg bg-[#333] w-12 h-6 rounded-full transition-colors duration-300 ease-in-out"></div>
+                        <div class="toggle-dot absolute w-5 h-5 bg-white rounded-full top-0.5 left-0.5 transition-transform duration-300 ease-in-out"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- General Functions Area -->
+            <div class="p-3 bg-[#151515] rounded-lg shadow-inner">
+                <label class="block text-sm font-medium text-gray-400 mb-3 border-b border-[#333] pb-1">General Functions</label>
+                <button onclick="importConfig()" class="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg mb-2">Import Config</button>
+                <button onclick="exportConfig()" class="px-4 py-2 mb-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg">Export Config</button>
+                <button onclick="clearLocalStorage()" class="px-4 py-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white rounded-lg text-sm transition-all duration-300 shadow-md hover:shadow-lg">Clear Cookies</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 flex flex-col h-screen">
+        <div class="flex-1 flex flex-col">
+            <!-- Site Logo and Slogan -->
+            <header class="text-center mb-2">
+                <div class="flex justify-center items-center mb-4">
+                    <a href="#" onclick="resetToHome(); return false;" class="flex items-center">
+                        <svg class="w-10 h-10 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        <h1 class="text-5xl font-bold gradient-text">OmniView</h1>
+                    </a>
+                </div>
+                <p class="text-gray-400 mb-8">Watch Freely, Enjoy Wonderfully</p>
+            </header>
+            
+
+            <div id="searchArea" class="flex-1 flex flex-col items-center justify-center">
+                <div class="w-full max-w-2xl">
+                    <div class="flex items-stretch mb-3 h-14 shadow-lg rounded-lg overflow-hidden">
+                        <!-- Home Button -->
+                        <button onclick="resetToHome()" 
+                                class="w-20 sm:w-24 flex items-center justify-center bg-white text-black font-medium hover:bg-gray-200 transition-colors" 
+                                aria-label="Return to Home" title="Return to Home">
+                            Home
+                        </button>
+                        <!-- Search Input -->
+                        <input type="text" 
+                               id="searchInput" 
+                               class="flex-1 bg-[#111] border-y border-[#333] text-white px-6 py-0 focus:outline-none transition-colors" 
+                               placeholder="Search for your favorite videos..." 
+                               autocomplete="off"
+                               aria-label="Video Search Box"
+                               oninput="toggleClearButton()">
+                        <!-- Clear Button -->
+                        <button id="clearSearchInput" 
+                                class="flex pr-2 bg-[#111] border-y border-[#333] items-center justify-center text-gray-400 hover:text-white hidden"
+                                onclick="clearSearchInput()"
+                                aria-label="Clear Search Box"
+                                title="Clear Search Box">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <!-- Search Button -->
+                        <button onclick="search()" 
+                                class="w-20 sm:w-24 flex items-center justify-center bg-white text-black font-medium hover:bg-gray-200 transition-colors" 
+                                aria-label="Search Button">
+                            Search
+                        </button>
+                    </div>
+                    
+                    <!-- Add Recent Search History Section -->
+                    <div id="recentSearches" class="mt-4 flex flex-wrap gap-2" aria-label="Recent Searches">
+                        <!-- Recent search records will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Douban Popular Recommendations Area: Hidden by default，Now located below search area，Adjust Width -->
+            <div id="doubanArea" class="w-full my-8 hidden">
+                <div class="mx-auto max-w-screen-xl px-2">
+                    <!-- Improve title and tag area layout -->
+                    <div class="mb-4">
+                        <!-- Title and refresh button on one line -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <h2 class="text-xl font-bold text-white mr-4">Douban Popular</h2>
+                                <!-- Add Movies/TV Series Toggle Switch -->
+                                <div class="flex items-center bg-[#222] rounded-full p-1">
+                                    <button id="douban-movie-toggle" class="px-3 py-1 text-sm rounded-full bg-pink-600 text-white">Movies</button>
+                                    <button id="douban-tv-toggle" class="px-3 py-1 text-sm rounded-full text-gray-300 hover:text-white">TV Series</button>
+                                </div>
+                            </div>
+                            <button id="douban-refresh" class="text-sm px-3 py-1 bg-pink-600 hover:bg-pink-700 text-white rounded-lg flex items-center gap-1">
+                                <span>Load More</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- Category tags on separate line，Add scroll support for mobile devices -->
+                        <div class="overflow-x-auto pb-2">
+                            <div id="douban-tags" class="flex space-x-2 min-w-max"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommended Content -->
+                    <div id="douban-results" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3"></div>
+                </div>
+            </div>
+            
+            <!-- Search Results：Initially Hidden -->
+            <div id="resultsArea" class="w-full hidden">
+                <div class="mx-auto max-w-7xl px-2"> <!-- Add max-width constraint and center -->
+                    <div class="flex justify-end items-center mb-4">
+                        <div class="text-sm text-gray-400">
+                            <span id="searchResultsCount">0</span> results
+                        </div>
+                    </div>
+                    <!-- Modify grid layout to accommodate larger horizontal cards -->
+                    <div id="results" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Results will be dynamically generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Area -->
+    <footer class="footer mt-8 py-6 border-t border-[#333] bg-[#0a0a0a]">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center justify-center md:justify-start">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="gradient-text font-bold">OmniView</span>
+                    </div>
+                    <p class="text-gray-500 text-sm mt-2 text-center md:text-left">© 2025 OmniView - Free Viewing, Enjoy Excellence</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <p class="text-gray-500 text-sm max-w-md">
+                        Disclaimer：This site is only a video search tool，does not store、upload or distribute any video content。
+                        All videos come from third-party API interfaces。If there is any infringement，please contact the relevant content provider。
+                    </p>
+                    <div class="mt-2 flex justify-center md:justify-end space-x-4">
+                        <a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">About Us</a>
+                        <a href="about.html" class="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Detail Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/95 hidden flex items-center justify-center transition-opacity duration-300 z-40">
+        <div class="bg-[#111] p-8 rounded-lg w-11/12 max-w-4xl border border-[#333] max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6 flex-none">
+                <h2 id="modalTitle" class="text-2xl font-bold gradient-text break-words pr-4 max-w-[80%]"></h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-2xl transition-colors flex-shrink-0">&times;</button>
+            </div>
+            <div id="modalContent" class="overflow-auto flex-1 min-h-0">
+                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Verification Dialog -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[65] transition-opacity duration-300">
+        <div class="bg-[#111] p-8 rounded-lg w-11/12 max-w-md border border-[#333] max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6 flex-none">
+                <h2 class="text-2xl font-bold gradient-text">Access Verification</h2>
+            </div>
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">Please enter password to continue</p>
+                <form id="passwordForm" onsubmit="handlePasswordSubmit(); return false;">
+                    <input type="text" name="username" id="username" autocomplete="username" style="display:none" tabindex="-1" aria-hidden="true">
+                    <input type="password" id="passwordInput" class="w-full bg-[#111] border border-[#333] text-white px-4 py-3 rounded-lg focus:outline-none focus:border-white transition-colors" placeholder="Password..." autocomplete="new-password">
+                    <div class="mt-4 w-full flex space-x-4">
+                        <button id="passwordSubmitBtn" type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Submit</button>
+                        <button id="passwordCancelBtn" type="button" onclick="hidePasswordModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Cancel</button>
+                    </div>
+                </form>
+                <p id="passwordError" class="text-red-500 mt-2 hidden">Incorrect password, please try again</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright Notice Dialog -->
+    <div id="disclaimerModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60]">
+        <div class="bg-[#111] p-8 rounded-lg border border-[#333] w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold gradient-text mb-6 text-center">Terms of Use</h2>
+            <div class="text-gray-300 space-y-4">
+                <p>
+                    Welcome OmniView。Before you start，Please read and agree to the following terms：
+                </p>
+                <p>
+                    <strong class="text-blue-400">Service Nature:</strong> OmniView only provides video search services and does not directly provide, store, or upload any video content. All search results are from third-party public interfaces.
+                </p>
+                <p>
+                    <strong class="text-blue-400">User Responsibility:</strong> When using the services of this website, users must abide by relevant laws and regulations and may not use Search Results to engage in infringing activities, such as downloading or disseminating unauthorized works.
+                </p>
+                <p>
+                    <strong class="text-blue-400">Ad Risk Warning:</strong> All videos on this site are collected from third-party collection sites. The advertisements that appear in the videos have nothing to do with this site. Please do not believe or click on any advertising content in the videos to avoid being deceived.
+                </p>
+            </div>
+            <div class="mt-6 flex justify-center">
+                <button id="acceptDisclaimerBtn" class="px-6 py-3 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300">
+                    I have read and accept
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message Box -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 opacity-0 -translate-y-full z-50">
+        <p id="toastMessage"></p>
+    </div>
+
+    <!-- Add loading Alert Box -->
+    <div id="loading" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50">
+        <div class="bg-[#111] p-8 rounded-lg border border-[#333] flex items-center space-x-4">
+            <div class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-white text-lg">Loading...</p>
+        </div>
+    </div>
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "OmniView",
+        "url": "https://omniview.is-an.org/",
+        "description": "Free Online Video Search and Streaming Platform",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://omniview.is-an.org/?s={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+
+    <!-- Import pure JS sha256（HTTP still available under） -->
+    <script src="libs/sha256.min.js"></script>
+    <script>
+        // Save original js-sha256 implementation to avoid being overwritten by password.js
+        window._jsSha256 = window.sha256;
+    </script>
+    <script src="js/config.js"></script>
+    <script src="js/customer_site.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/douban.js"></script>
+    <script src="js/password.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/app.js"></script>
+
+    <!-- PWA Register -->
+    <script src="js/pwa-register.js"></script>
+
+    <!-- Environment Variable Injection Script -->
+    <script>
+        // Create global environment variable object
+        window.__ENV__ = window.__ENV__ || {};
+        
+        // Inject server-side environment variables (will be replaced by server)
+        // PASSWORD variable will be injected here by server
+        window.__ENV__.PASSWORD = "{{PASSWORD}}";
+        window.__ENV__.ADMINPASSWORD = "{{ADMINPASSWORD}}";
+    </script>
+
+    <!-- Version Detection Script -->
+    <script src="js/version-check.js"></script>
+
+    <!-- Add dialog and URL search parameter handling script -->
+    <script src="js/index-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+# ===== Dependency Files =====
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json.bak
+
+# ===== Environment variable files =====
+.env
+.env.*
+!.env.example
+
+# ===== Git related =====
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# ===== IDE Configuration =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ===== Test File =====
+test/
+tests/
+*.test.js
+*.spec.js
+coverage/
+.nyc_output/
+
+# ===== Document files =====
+README.md
+CONTRIBUTING.md
+LICENSE
+docs/
+*.md
+!package.json
+
+# ===== CI/CD Configuration =====
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+.circleci/
+
+# ===== Docker related =====
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+.docker/
+
+# ===== Deployment platform configuration =====
+# Netlify
+netlify.toml
+netlify/
+.netlify/
+
+# Vercel
+vercel.json
+.vercel/
+
+# Render
+render.yaml
+
+# Other configurations
+nodemon.json
+
+# ===== Logs and temporary files =====
+logs/
+*.log
+tmp/
+temp/
+.cache/
+dist/
+build/
+
+# ===== Operating system files =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== Other unnecessary files =====
+.editorconfig
+.prettierrc
+.eslintrc*
+.stylelintrc*

@@ -1,0 +1,30 @@
+# netlify.toml
+
+[build]
+  # If your project doesn't need a build step (pure static + functions), you can omit publish
+  # publish = "." # Assuming your HTML/CSS/JS files are in the root directory
+  functions = "netlify/functions" # Specify Netlify functions directory
+
+# Configure Edge Functions
+[[edge_functions]]
+  function = "inject-env"
+  path = "/*"
+
+# Configure rewrite rules to route /proxy/* requests to the proxy function
+# This way the frontend's PROXY_URL can still be '/proxy/'
+[[redirects]]
+  from = "/proxy/*"
+  to = "/.netlify/functions/proxy/:splat" # Pass path parameters to the function
+  status = 200 # Important: this is a proxy, not a redirect
+
+# Handle search path format /s=*
+[[redirects]]
+  from = "/s=*"
+  to = "/index.html"
+  status = 200
+
+# (Optional) Set cache headers for other static files, etc.
+# [[headers]]
+#   for = "/*"
+#   [headers.values]
+#     # Add any global headers here
