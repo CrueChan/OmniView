@@ -1,8 +1,14 @@
 # OmniView - Free Online Video Search and Streaming Platform
 
 <div align="center">
-  <img src="image/logo.png" alt="OmniView Logo" width="120">
-  <br>
+  <img src="image/logo.png" alt="OmniView Logo">
+
+  [![GitHub stars](https://img.shields.io/github/stars/CrueChan/OmniView?style=social)](https://github.com/CrueChan/OmniView/stargazers)
+  [![GitHub forks](https://img.shields.io/github/forks/CrueChan/OmniView?style=social)](https://github.com/CrueChan/OmniView/network)
+  [![GitHub issues](https://img.shields.io/github/issues/CrueChan/OmniView)](https://github.com/CrueChan/OmniView/issues)
+  [![GitHub license](https://img.shields.io/github/license/CrueChan/OmniView)](https://github.com/CrueChan/OmniView/blob/main/LICENSE)
+  [![Docker Pulls](https://img.shields.io/docker/pulls/YOUR_DOCKERHUB/omniview)](https://hub.docker.com/r/YOUR_DOCKERHUB/omniview)
+
   <p><strong>Stream Freely, Enjoy Fully</strong></p>
 </div>
 
