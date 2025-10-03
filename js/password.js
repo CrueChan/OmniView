@@ -20,7 +20,7 @@ function isPasswordProtected() {
 window.isPasswordProtected = isPasswordProtected;
 
 /**
- * Verify if user input password is correct（Async，Use SHA-256 hash）
+ * Verify if user input password is correct（Async, Use SHA-256 hash）
  */
 // Unified verification function
 async function verifyPassword(password, passwordType = 'PASSWORD') {
